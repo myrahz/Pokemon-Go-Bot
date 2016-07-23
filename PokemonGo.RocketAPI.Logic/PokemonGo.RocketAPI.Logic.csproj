@@ -70,6 +70,7 @@
       <DependentUpon>Resource.resx</DependentUpon>
     </Compile>
     <Compile Include="Utils\LocationUtils.cs" />
+    <Compile Include="Utils\Statistics.cs" />
     <Compile Include="Utils\StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
