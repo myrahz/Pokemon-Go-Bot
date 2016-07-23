@@ -42,8 +42,6 @@
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.grpStats = new System.Windows.Forms.GroupBox();
-            this.textTotalPokemons = new System.Windows.Forms.TextBox();
-            this.textTotalPokestop = new System.Windows.Forms.TextBox();
             this.textPokecoins = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textStardust = new System.Windows.Forms.TextBox();
@@ -200,8 +198,6 @@
             // 
             // grpStats
             // 
-            this.grpStats.Controls.Add(this.textTotalPokemons);
-            this.grpStats.Controls.Add(this.textTotalPokestop);
             this.grpStats.Controls.Add(this.textPokecoins);
             this.grpStats.Controls.Add(this.label4);
             this.grpStats.Controls.Add(this.textStardust);
@@ -217,20 +213,6 @@
             this.grpStats.TabIndex = 9;
             this.grpStats.TabStop = false;
             this.grpStats.Text = "Player stats";
-            // 
-            // textTotalPokemons
-            // 
-            this.textTotalPokemons.Location = new System.Drawing.Point(232, 38);
-            this.textTotalPokemons.Name = "textTotalPokemons";
-            this.textTotalPokemons.Size = new System.Drawing.Size(65, 20);
-            this.textTotalPokemons.TabIndex = 18;
-            // 
-            // textTotalPokestop
-            // 
-            this.textTotalPokestop.Location = new System.Drawing.Point(232, 12);
-            this.textTotalPokestop.Name = "textTotalPokestop";
-            this.textTotalPokestop.Size = new System.Drawing.Size(65, 20);
-            this.textTotalPokestop.TabIndex = 17;
             // 
             // textPokecoins
             // 
@@ -392,7 +374,6 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "liveView";
             this.Text = "liveView";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.liveView_FormClosing);
             this.grpMyItems.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataMyItems)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataMyPokemons)).EndInit();
@@ -434,7 +415,5 @@
         private System.Windows.Forms.GroupBox grpMap;
         private System.Windows.Forms.TextBox textCurrentLatLng;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.TextBox textTotalPokestop;
-        private System.Windows.Forms.TextBox textTotalPokemons;
     }
 }

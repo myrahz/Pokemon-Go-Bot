@@ -328,7 +328,6 @@ namespace PokemonGo.RocketAPI.Logic
 
         }
 
-
         private async Task ExecuteFarmingPokestopsAndPokemons()
         {
             var mapObjects = await _client.GetMapObjects();
@@ -413,29 +412,37 @@ namespace PokemonGo.RocketAPI.Logic
 
         public async Task PostLoginExecute()
         {
-            while (true)
+            try
             {
-                _playerProfile = await _client.GetProfile();
-                if (_clientSettings.EvolveAllPokemonWithEnoughCandy)
-                    await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-                if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
-                await DisplayHighests();
-                _stats.UpdateConsoleTitle(_inventory);
-                await RecycleItems();
-                await ExecuteFarmingPokestopsAndPokemons();
-                UpdateLiveView();
-                /*
-            * Example calls below
-            *
-            var profile = await _client.GetProfile();
-            var settings = await _client.GetSettings();
-            var mapObjects = await _client.GetMapObjects();
-            var inventory = await _client.GetInventory();
-            var pokemons = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon).Where(p => p != null && p?.PokemonId > 0);
-            */
+                while (true)
+                {
+                    _playerProfile = await _client.GetProfile();
+                    if (_clientSettings.EvolveAllPokemonWithEnoughCandy)
+                        await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
+                    if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
+                    await DisplayHighests();
+                    _stats.UpdateConsoleTitle(_inventory);
+                    await RecycleItems();
+                    await ExecuteFarmingPokestopsAndPokemons();
+                    UpdateLiveView();
+                    /*
+                * Example calls below
+                *
+                var profile = await _client.GetProfile();
+                var settings = await _client.GetSettings();
+                var mapObjects = await _client.GetMapObjects();
+                var inventory = await _client.GetInventory();
+                var pokemons = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon).Where(p => p != null && p?.PokemonId > 0);
+                */
 
-                await Task.Delay(10000);
+                    await Task.Delay(10000);
+                }
             }
+            catch (Exception e)
+            {
+                _liveView.Close();
+            }
+ 
         }
 
         private async Task RecycleItems()
@@ -517,30 +524,45 @@ namespace PokemonGo.RocketAPI.Logic
         public void StartLiveView()
         {
             _liveView = new liveView();
+            _liveView.FormClosed += StopLiveView;
+
             Application.EnableVisualStyles();
             Application.Run(_liveView);
+        }
+
+        public void StopLiveView(object sender, EventArgs e)
+        {
+            _liveView = null;
         }
 
         private async void UpdateLiveView()
         {
             if (_liveView != null)
             {
-                _liveView.UpdateLatLng(_client.CurrentLat, _client.CurrentLng);
+                try
+                {
+                    _liveView.UpdateLatLng(_client.CurrentLat, _client.CurrentLng);
 
-                var mapObjects = await _client.GetMapObjects();
+                    var mapObjects = await _client.GetMapObjects();
 
-                var profile = await _client.GetProfile();
-                _liveView.UpdateMyProfile(profile.Profile);
+                    var profile = await _client.GetProfile();
+                    _liveView.UpdateMyProfile(profile.Profile);
 
-                var inventory = await _client.GetInventory();
-                PlayerStats mystats = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData.PlayerStats).Where(p => p != null).FirstOrDefault();
-                _liveView.UpdateMyStats(mystats);
+                    var inventory = await _client.GetInventory();
+                    PlayerStats mystats = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData.PlayerStats).Where(p => p != null).FirstOrDefault();
+                    _liveView.UpdateMyStats(mystats);
 
-                IEnumerable<PokemonData> mypokemons = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon).Where(p => p != null && p?.PokemonId > 0).OrderBy(pp => pp.PokemonId.ToString()).ThenBy(pp => pp.Cp).ToList<PokemonData>();
-                _liveView.UpdateMyPokemons(mypokemons);
+                    IEnumerable<PokemonData> mypokemons = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon).Where(p => p != null && p?.PokemonId > 0).OrderBy(pp => pp.PokemonId.ToString()).ThenBy(pp => pp.Cp).ToList<PokemonData>();
+                    _liveView.UpdateMyPokemons(mypokemons);
 
-                IEnumerable<Item> myitems = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData.Item).Where(p => p != null).ToList<Item>();
-                _liveView.UpdateMyItems(myitems);
+                    IEnumerable<Item> myitems = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData.Item).Where(p => p != null).ToList<Item>();
+                    _liveView.UpdateMyItems(myitems);
+
+                }
+                catch
+                {
+
+                }
             }
         }
 

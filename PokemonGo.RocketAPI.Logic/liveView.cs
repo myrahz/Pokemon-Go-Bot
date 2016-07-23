@@ -138,7 +138,7 @@ namespace PokemonGo.RocketAPI.Logic
                     gMap.Invoke(new Action(() => _mapOverlays["pokestops"].Markers.Add(marker)));
                 }
             }
-            textTotalPokestop.Invoke(new Action(() => textTotalPokestop.Text = _mapOverlays["pokestops"].Markers.Count.ToString()));
+            //textTotalPokestop.Invoke(new Action(() => textTotalPokestop.Text = _mapOverlays["pokestops"].Markers.Count.ToString()));
         }
 
         public void UpdateMapPokemons(IEnumerable<MapPokemon> pokemonsOnMap)
@@ -167,7 +167,7 @@ namespace PokemonGo.RocketAPI.Logic
                     gMap.Invoke(new Action(() => _mapOverlays["pokemons"].Markers.Add(marker)));
                 }
             }
-            textTotalPokemons.Invoke(new Action(() => textTotalPokemons.Text = _mapOverlays["pokemons"].Markers.Count.ToString()));
+            //textTotalPokemons.Invoke(new Action(() => textTotalPokemons.Text = _mapOverlays["pokemons"].Markers.Count.ToString()));
         }
 
         public void UpdateMyPokemons(IEnumerable<PokemonData> mypokemons)
@@ -236,12 +236,11 @@ namespace PokemonGo.RocketAPI.Logic
         {
             if (_startExperience == 0)
                 _startExperience = mystats.Experience;
-
             textLevel.Invoke(new Action(() => textLevel.Text = mystats.Level.ToString()));
             progressLevel.Invoke(new Action(() => progressLevel.Minimum = 0));
-            progressLevel.Invoke(new Action(() => progressLevel.Maximum = (int)mystats.NextLevelXp));
-            progressLevel.Invoke(new Action(() => progressLevel.Value = (int)mystats.Experience));
-            labelExp.Invoke(new Action(() => labelExp.Text = mystats.Experience.ToString() + "/" + mystats.NextLevelXp.ToString()));
+            progressLevel.Invoke(new Action(() => progressLevel.Maximum = (int)mystats.NextLevelXp - (int)mystats.PrevLevelXp));
+            progressLevel.Invoke(new Action(() => progressLevel.Value = (int)mystats.Experience - (int)mystats.PrevLevelXp));
+            labelExp.Invoke(new Action(() => labelExp.Text = ((int)mystats.Experience - (int)mystats.PrevLevelXp).ToString() + "/" + ((int)mystats.NextLevelXp - (int)mystats.PrevLevelXp).ToString()));
 
             _currentExperience = mystats.Experience;
         }
@@ -261,10 +260,5 @@ namespace PokemonGo.RocketAPI.Logic
             labelExpHr.Invoke(new Action(() => labelExpHr.Text = exphr.ToString() + " XP/HR"));
         }
 
-        private void liveView_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            e.Cancel = true;
-            return;
-        }
     }
 }
