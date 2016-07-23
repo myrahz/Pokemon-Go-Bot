@@ -194,7 +194,7 @@ namespace PokemonGo.RocketAPI.Logic
             }
 
             dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Sort(dataMyPokemons.Columns[1], ListSortDirection.Ascending)));
-            labelPokemonSpace.Invoke(new Action(() => labelPokemonSpace.Text = mypokemons.Count().ToString() + "/" + _bagSpace.ToString()));
+            labelPokemonSpace.Invoke(new Action(() => labelPokemonSpace.Text = mypokemons.Count().ToString() + "/" + _pokemonSpace.ToString()));
         }
 
         public void UpdateMyItems(IEnumerable<Item> myitems)
