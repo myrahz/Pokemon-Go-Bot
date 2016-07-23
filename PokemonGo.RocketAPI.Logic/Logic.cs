@@ -45,15 +45,21 @@ namespace PokemonGo.RocketAPI.Logic
             do
             {
                 var probability = encounter?.CaptureProbability?.CaptureProbability_?.FirstOrDefault();
+                
+
+                var pokeball = await GetBestBall(encounter?.WildPokemon);
+                if (pokeball == MiscEnums.Item.ITEM_UNKNOWN)
+                {
+                    Logger.Write($"No Pokeballs - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}", LogLevel.Caught);
+                    return;
+                }
                 if ((probability.HasValue && probability.Value < 0.35 && encounter.WildPokemon?.PokemonData?.Cp > 400) ||
                     PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData) >=
                     _clientSettings.KeepMinIVPercentage)
                 {
-                    //Throw berry is we can
                     await UseBerry(pokemon.EncounterId, pokemon.SpawnpointId);
                 }
 
-                var pokeball = await GetBestBall(encounter?.WildPokemon);
                 var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng,
                     pokemon.Latitude, pokemon.Longitude);
                 caughtPokemonResponse =
@@ -447,15 +453,22 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task RecycleItems()
         {
-            var items = await _inventory.GetItemsToRecycle(_clientSettings);
+            var allItems = await _inventory.GetItems();
+            Random rnd = new Random();
+            int recycleThreshold = rnd.Next(200, 251);
 
-            foreach (var item in items)
+            if (allItems.Count() >= recycleThreshold)
             {
-                var transfer = await _client.RecycleItem((ItemId) item.Item_, item.Count);
-                Logger.Write($"{item.Count}x {(ItemId)item.Item_}", LogLevel.Recycling);
-                _stats.AddItemsRemoved(item.Count);
-                _stats.UpdateConsoleTitle(_inventory);
-                await Task.Delay(500);
+                var items = await _inventory.GetItemsToRecycle(_clientSettings);
+
+                foreach (var item in items)
+                {
+                    var transfer = await _client.RecycleItem((ItemId)item.Item_, item.Count);
+                    Logger.Write($"{item.Count}x {(ItemId)item.Item_}", LogLevel.Recycling);
+                    _stats.AddItemsRemoved(item.Count);
+                    _stats.UpdateConsoleTitle(_inventory);
+                    await Task.Delay(500);
+                }
             }
         }
 
