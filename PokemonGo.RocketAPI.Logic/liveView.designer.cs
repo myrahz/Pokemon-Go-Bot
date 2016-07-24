@@ -37,11 +37,8 @@
             this.Column8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.labelPokemonSpace = new System.Windows.Forms.Label();
             this.dataMyPokemons = new System.Windows.Forms.DataGridView();
-            this.Column1 = new System.Windows.Forms.DataGridViewImageColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.grpStats = new System.Windows.Forms.GroupBox();
+            this.labelRuntime = new System.Windows.Forms.Label();
             this.textPokecoins = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.textStardust = new System.Windows.Forms.TextBox();
@@ -56,8 +53,15 @@
             this.grpMap = new System.Windows.Forms.GroupBox();
             this.textCurrentLatLng = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.labelRuntime = new System.Windows.Forms.Label();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.Column1 = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column11 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.Column12 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.grpMyItems.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataMyItems)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataMyPokemons)).BeginInit();
@@ -166,44 +170,18 @@
             this.Column1,
             this.Column2,
             this.Column3,
-            this.Column7});
+            this.Column7,
+            this.Column9,
+            this.Column10,
+            this.Column11,
+            this.Column12});
             this.dataMyPokemons.Location = new System.Drawing.Point(6, 19);
             this.dataMyPokemons.Name = "dataMyPokemons";
-            this.dataMyPokemons.ReadOnly = true;
             this.dataMyPokemons.RowHeadersWidth = 10;
             this.dataMyPokemons.RowTemplate.Height = 40;
             this.dataMyPokemons.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataMyPokemons.Size = new System.Drawing.Size(855, 275);
             this.dataMyPokemons.TabIndex = 8;
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "";
-            this.Column1.Name = "Column1";
-            this.Column1.ReadOnly = true;
-            this.Column1.Width = 30;
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Pokemon";
-            this.Column2.Name = "Column2";
-            this.Column2.ReadOnly = true;
-            this.Column2.Width = 150;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "CP";
-            this.Column3.Name = "Column3";
-            this.Column3.ReadOnly = true;
-            this.Column3.Width = 75;
-            // 
-            // Column7
-            // 
-            this.Column7.HeaderText = "ID";
-            this.Column7.Name = "Column7";
-            this.Column7.ReadOnly = true;
-            this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
-            this.Column7.Visible = false;
             // 
             // grpStats
             // 
@@ -223,6 +201,15 @@
             this.grpStats.TabIndex = 9;
             this.grpStats.TabStop = false;
             this.grpStats.Text = "Player stats";
+            // 
+            // labelRuntime
+            // 
+            this.labelRuntime.Location = new System.Drawing.Point(172, 16);
+            this.labelRuntime.Name = "labelRuntime";
+            this.labelRuntime.Size = new System.Drawing.Size(127, 20);
+            this.labelRuntime.TabIndex = 19;
+            this.labelRuntime.Text = "runtime";
+            this.labelRuntime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // textPokecoins
             // 
@@ -382,15 +369,6 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Current lat/lng";
             // 
-            // labelRuntime
-            // 
-            this.labelRuntime.Location = new System.Drawing.Point(172, 16);
-            this.labelRuntime.Name = "labelRuntime";
-            this.labelRuntime.Size = new System.Drawing.Size(127, 20);
-            this.labelRuntime.TabIndex = 19;
-            this.labelRuntime.Text = "runtime";
-            this.labelRuntime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
@@ -409,6 +387,61 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 325F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(873, 729);
             this.tableLayoutPanel1.TabIndex = 12;
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "";
+            this.Column1.Name = "Column1";
+            this.Column1.ReadOnly = true;
+            this.Column1.Width = 30;
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Pokemon";
+            this.Column2.Name = "Column2";
+            this.Column2.ReadOnly = true;
+            this.Column2.Width = 150;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "CP";
+            this.Column3.Name = "Column3";
+            this.Column3.ReadOnly = true;
+            this.Column3.Width = 75;
+            // 
+            // Column7
+            // 
+            this.Column7.HeaderText = "ID";
+            this.Column7.Name = "Column7";
+            this.Column7.ReadOnly = true;
+            this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.Column7.Visible = false;
+            // 
+            // Column9
+            // 
+            this.Column9.HeaderText = "Perfect";
+            this.Column9.Name = "Column9";
+            this.Column9.ReadOnly = true;
+            // 
+            // Column10
+            // 
+            this.Column10.HeaderText = "Level";
+            this.Column10.Name = "Column10";
+            this.Column10.ReadOnly = true;
+            // 
+            // Column11
+            // 
+            this.Column11.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.Column11.HeaderText = "EvolveNextUpdate";
+            this.Column11.Name = "Column11";
+            this.Column11.Width = 103;
+            // 
+            // Column12
+            // 
+            this.Column12.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.Column12.HeaderText = "TransferNextUpdate";
+            this.Column12.Name = "Column12";
+            this.Column12.Width = 109;
             // 
             // liveView
             // 
@@ -451,10 +484,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column5;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column8;
-        private System.Windows.Forms.DataGridViewImageColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
         private GMap.NET.WindowsForms.GMapControl gMap;
         private System.Windows.Forms.GroupBox grpMyPokemons;
         private System.Windows.Forms.GroupBox grpMap;
@@ -462,5 +491,13 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label labelRuntime;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.DataGridViewImageColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column10;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column11;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn Column12;
     }
 }

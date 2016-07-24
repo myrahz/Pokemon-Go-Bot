@@ -188,9 +188,9 @@ namespace PokemonGo.RocketAPI.Logic
                 if (currentList.Where(p => (string)p.Cells[3].Value == pokemon.Id.ToString()).Count() == 0)
                 {
                     if (_imagesList.Images.ContainsKey("pokemon_" + ((int)pokemon.PokemonId).ToString()))
-                        dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(_imagesList.Images[_imagesList.Images.IndexOfKey("pokemon_" + ((int)pokemon.PokemonId).ToString())], pokemon.PokemonId.ToString(), pokemon.Cp + "(" + PokemonInfo.CalculateMaxCP(pokemon).ToString() +")", pokemon.Id.ToString())));
+                        dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(_imagesList.Images[_imagesList.Images.IndexOfKey("pokemon_" + ((int)pokemon.PokemonId).ToString())], pokemon.PokemonId.ToString(), pokemon.Cp + " (" + PokemonInfo.CalculateMaxCP(pokemon).ToString() +")", pokemon.Id.ToString(),Math.Round(PokemonInfo.CalculatePokemonPerfection(pokemon),1),PokemonInfo.GetLevel(pokemon), false, false)));
                     else
-                        dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(new Bitmap(40, 30), pokemon.PokemonId.ToString(), pokemon.Cp, pokemon.Id.ToString())));
+                        dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(new Bitmap(40, 30), pokemon.PokemonId.ToString(), pokemon.Cp + " (" + PokemonInfo.CalculateMaxCP(pokemon).ToString() + ")", pokemon.Id.ToString(), Math.Round(PokemonInfo.CalculatePokemonPerfection(pokemon),1),PokemonInfo.GetLevel(pokemon), false, false)));
                 }
             }
 
@@ -260,6 +260,30 @@ namespace PokemonGo.RocketAPI.Logic
             double exphr = Math.Round((_currentExperience - _startExperience) / (DateTime.Now - _startDateTime).TotalHours);
             labelExpHr.Invoke(new Action(() => labelExpHr.Text = exphr.ToString() + " XP/HR"));
             labelRuntime.Invoke(new Action(() => labelRuntime.Text = "Runtime: "+(DateTime.Now - _startDateTime).ToString(@"d\.hh\:mm\:ss")));
+        }
+
+        public Dictionary<string, ulong> GetPokemonToEvolve()
+        {
+            Dictionary<string, ulong> pokemonsToEvolve = new Dictionary<string, ulong>();
+            foreach(DataGridViewRow row in dataMyPokemons.Rows)
+            {
+                if ((bool)row.Cells[6].Value == true)
+                    pokemonsToEvolve.Add((string)row.Cells[1].Value, Convert.ToUInt64(row.Cells[3].Value));
+            }
+
+            return pokemonsToEvolve;
+        }
+
+        public Dictionary<string, ulong> GetPokemonToTransfer()
+        {
+            Dictionary<string, ulong> pokemonsToTransfer = new Dictionary<string, ulong>();
+            foreach (DataGridViewRow row in dataMyPokemons.Rows)
+            {
+                if ((bool)row.Cells[7].Value == true && (bool)row.Cells[6].Value == false)
+                    pokemonsToTransfer.Add((string)row.Cells[1].Value, Convert.ToUInt64(row.Cells[3].Value));
+            }
+
+            return pokemonsToTransfer;
         }
 
     }

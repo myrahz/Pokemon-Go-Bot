@@ -262,7 +262,7 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     Logger.Write(e.Message + " from " + e.Source);
                     Logger.Write("Got an exception, trying automatic restart..", LogLevel.Error);
-                    _liveView.Close();
+                    _liveView.Invoke(new Action(() => _liveView.Close()));
                     await Execute();
                 }
                 await Task.Delay(10000);
@@ -514,7 +514,7 @@ namespace PokemonGo.RocketAPI.Logic
             }
             catch (Exception e)
             {
-                _liveView.Close();
+                _liveView.Invoke(new Action(() => _liveView.Close()));
             }
  
         }
@@ -621,11 +621,48 @@ namespace PokemonGo.RocketAPI.Logic
                     IEnumerable<Item> myitems = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData.Item).Where(p => p != null).ToList<Item>();
                     _liveView.UpdateMyItems(myitems);
 
+                    if (_liveView.GetPokemonToEvolve().Count > 0)
+                        await EvolvePokemonFromList(_liveView.GetPokemonToEvolve());
+
+                    if (_liveView.GetPokemonToTransfer().Count > 0)
+                        await TransferPokemonFromList(_liveView.GetPokemonToTransfer());
+
                 }
                 catch
                 {
 
                 }
+            }
+        }
+
+        private async Task EvolvePokemonFromList(Dictionary<string, ulong> pokemonToEvolve)
+        {
+            
+            foreach (var pokemon in pokemonToEvolve)
+            {
+                var evolvePokemonOutProto = await _client.EvolvePokemon(pokemon.Value);
+
+                if (evolvePokemonOutProto.Result == EvolvePokemonOut.Types.EvolvePokemonStatus.PokemonEvolvedSuccess)
+                {
+                    Logger.Write($"{pokemon.Key} successfully for {evolvePokemonOutProto.ExpAwarded}xp",
+                        LogLevel.Evolve);
+                }
+                else
+                    Logger.Write(
+                        $"Failed {pokemon.Key}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.Key}",
+                        LogLevel.Evolve);
+
+                await Task.Delay(3000);
+            }
+        }
+
+        private async Task TransferPokemonFromList(Dictionary<string, ulong> pokemonToTransfer)
+        {
+            foreach (var pokemon in pokemonToTransfer)
+            {
+                var transfer = await _client.TransferPokemon(pokemon.Value);
+                Logger.Write($"{pokemon.Key} has been transfered.", LogLevel.Transfer);
+                await Task.Delay(500);
             }
         }
 
