@@ -28,7 +28,7 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Statistics _stats;
 
         private static liveView _liveView;
-        private static bool _useLiveview = false;
+        private static bool _useLiveview = true;
 
         public Logic(ISettings clientSettings)
         {
