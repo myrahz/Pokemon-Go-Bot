@@ -241,10 +241,10 @@ namespace PokemonGo.RocketAPI.Logic
                     switch (_clientSettings.AuthType)
                     {
                         case AuthType.Ptc:
-                            await _client.DoPtcLogin(_clientSettings.PtcUsername, _clientSettings.PtcPassword);
+                        await _client.DoPtcLogin(_clientSettings.PtcUsername, _clientSettings.PtcPassword);
                             break;
                         case AuthType.Google:
-                            await _client.DoGoogleLogin();
+                        await _client.DoGoogleLogin();
                             break;
                         default:
                             Logger.Write("wrong AuthType");
@@ -258,8 +258,9 @@ namespace PokemonGo.RocketAPI.Logic
 
                     await PostLoginExecute();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Logger.Write(e.Message + " from " + e.Source);
                     Logger.Write("Got an exception, trying automatic restart..", LogLevel.Error);
                     await Execute();
                 }
@@ -296,15 +297,27 @@ namespace PokemonGo.RocketAPI.Logic
                 if (pokemons.ElementAtOrDefault(pokemons.Count() - 1) != pokemon) // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
                 {
                     await Task.Delay(_clientSettings.DelayBetweenPokemonCatch);
-                }
             }
+        }
         }
 
         private async Task ExecuteFarmingPokestopsAndPokemons()
         {
             var mapObjects = await _client.GetMapObjects();
 
-            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts).Where(i => i.Type == FortType.Checkpoint && i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime());
+            // Wasn't sure how to make this pretty. Edit as needed.
+            var pokeStops =
+                mapObjects.MapCells.SelectMany(i => i.Forts)
+                    .Where(
+                        i =>
+                            i.Type == FortType.Checkpoint &&
+                            i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+                            ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
+                            LocationUtils.CalculateDistanceInMeters(
+                                _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude,
+                                    i.Latitude, i.Longitude) < _clientSettings.MaxTravelDistanceInMeters) ||
+                                        _clientSettings.MaxTravelDistanceInMeters == 0
+                            );
 
 
             var pokestopList = pokeStops.ToList();
@@ -314,7 +327,6 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 //resort
                 pokestopList = pokestopList.OrderBy(i => LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude)).ToList();
-
                 var pokeStop = pokestopList[0];
                 pokestopList.RemoveAt(0);
 
@@ -437,9 +449,8 @@ namespace PokemonGo.RocketAPI.Logic
 
             foreach (var duplicatePokemon in duplicatePokemons)
             {
-                if (PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >= _clientSettings.KeepMinIVPercentage || duplicatePokemon.Cp > _clientSettings.KeepMinCP)
+                if (duplicatePokemon.Cp >= _clientSettings.KeepMinCP || PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) > _clientSettings.KeepMinIVPercentage)
                     continue;
-
                 var transfer = await _client.TransferPokemon(duplicatePokemon.Id);
                 _stats.IncreasePokemonsTransfered();
                 _stats.UpdateConsoleTitle(_inventory);
@@ -452,7 +463,7 @@ namespace PokemonGo.RocketAPI.Logic
         public async Task UseBerry(ulong encounterId, string spawnPointId)
         {
             var inventoryBalls = await _inventory.GetItems();
-            var berries = inventoryBalls.Where(p => (ItemId) p.Item_ == ItemId.ItemRazzBerry);
+            var berries = inventoryBalls.Where(p => (ItemId)p.Item_ == ItemId.ItemRazzBerry);
             var berry = berries.FirstOrDefault();
 
             if (berry == null || berry.Count <= 0)
