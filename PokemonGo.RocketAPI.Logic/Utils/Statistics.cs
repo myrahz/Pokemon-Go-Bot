@@ -1,9 +1,11 @@
-﻿#region
+﻿#region using directives
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
+// ReSharper disable CyclomaticComplexity
 
 #endregion
 
@@ -31,19 +33,23 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             if (stat != null)
             {
                 var ep = stat.NextLevelXp - stat.PrevLevelXp - (stat.Experience - stat.PrevLevelXp);
-                var hours = Math.Round(ep/(TotalExperience/_getSessionRuntime()), 2);
+                var time = Math.Round(ep/(TotalExperience/_getSessionRuntime()), 2);
+                var hours = 0.00;
+                var minutes = 0.00;
+                if (double.IsInfinity(time) == false && time > 0)
+                {
+                    time = Convert.ToDouble(TimeSpan.FromHours(time).ToString("h\\.mm"), CultureInfo.InvariantCulture);
+                    hours = Math.Truncate(time);
+                    minutes = Math.Round((time - hours)*100);
+                }
 
                 output =
-                    $"{stat.Level} (next level in {hours}h | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
+                    $"{stat.Level} (next level in {hours}h {minutes}m | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
                 //output = $"{stat.Level} (LvLUp in {_hours}hours // EXP required: {_ep})";
             }
             return output;
         }
 
-        public void SetUsername(GetPlayerResponse profile)
-        {
-            PlayerName = profile.Profile.Username ?? "";
-        }
         public static double _getSessionRuntime()
         {
             return (DateTime.Now - InitSessionDateTime).TotalSeconds/3600;
@@ -167,13 +173,15 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             TotalPokemonsTransfered += 1;
         }
 
+        public void SetUsername(GetPlayerResponse profile)
+        {
+            PlayerName = profile.Profile.Username ?? "";
+        }
+
         public override string ToString()
         {
             return
-                string.Format(
-                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0}",
-                    PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience/_getSessionRuntime(),
-                    TotalPokemons/_getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved);
+                $"{PlayerName} - Runtime {_getSessionRuntimeInTimeFormat()} - Lvl: {CurrentLevelInfos} | EXP/H: {TotalExperience/_getSessionRuntime():0} | P/H: {TotalPokemons/_getSessionRuntime():0} | Stardust: {TotalStardust:0} | Transfered: {TotalPokemonsTransfered:0} | Items Recycled: {TotalItemsRemoved:0}";
         }
 
         public async void UpdateConsoleTitle(Inventory inventory)

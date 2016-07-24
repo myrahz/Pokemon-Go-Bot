@@ -1,6 +1,7 @@
-﻿#region
+﻿#region using directives
 
 using System;
+using System.Text;
 using PokemonGo.RocketAPI.Logging;
 
 #endregion
@@ -32,6 +33,8 @@ namespace PokemonGo.RocketAPI.Console
         /// <param name="color">Optional. Default is auotmatic</param>
         public void Write(string message, LogLevel level = LogLevel.Info, ConsoleColor color = ConsoleColor.Black)
         {
+            //Remember to change to a font that supports your language, otherwise it'll still show as ???
+            System.Console.OutputEncoding = Encoding.Unicode;
             if (level > _maxLogLevel)
                 return;
 
@@ -76,6 +79,10 @@ namespace PokemonGo.RocketAPI.Console
                 case LogLevel.Berry:
                     System.Console.ForegroundColor = ConsoleColor.DarkYellow;
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
+                    break;
+                case LogLevel.Egg:
+                    System.Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EGG) {message}");
                     break;
                 case LogLevel.Debug:
                     System.Console.ForegroundColor = ConsoleColor.Gray;

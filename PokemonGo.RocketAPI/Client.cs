@@ -29,41 +29,14 @@ namespace PokemonGo.RocketAPI
         public Client(ISettings settings)
         {
             Settings = settings;
-            if (File.Exists(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini") &&
-                File.ReadAllText(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini").Contains(":"))
-            {
-                var latlngFromFile = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini");
-                var latlng = latlngFromFile.Split(':');
-                if (latlng[0].Length != 0 && latlng[1].Length != 0)
-                {
-                    try
-                    {
-                        double temp_lat = Convert.ToDouble(latlng[0]);
-                        double temp_long = Convert.ToDouble(latlng[1]);
 
-                        if(temp_lat >= -90 && temp_lat <= 90 && temp_long >= -180 && temp_long <= 180)
-                        {
-                            SetCoordinates(Convert.ToDouble(latlng[0]), Convert.ToDouble(latlng[1]),
-                            Settings.DefaultAltitude);
-                        }
-                        else
-                        {
-                            Logger.Write("Coordinates in \"Coords.ini\" file are invalid, using the default coordinates ",
-                            LogLevel.Warning);
-                            SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        Logger.Write("Coordinates in \"Coords.ini\" file are invalid, using the default coordinates ",
-                            LogLevel.Warning);
-                        SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
-                    }
-                }
-                else
-                {
-                    SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
-                }
+            DirectoryInfo di = Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\Configs");
+
+            Tuple<double, double> latLngFromFile = GetLatLngFromFile();
+
+            if (latLngFromFile != null)
+            {
+                SetCoordinates(latLngFromFile.Item1, latLngFromFile.Item2, Settings.DefaultAltitude);
             }
             else
             {
@@ -84,6 +57,48 @@ namespace PokemonGo.RocketAPI
             _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Accept", "*/*");
             _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type",
                 "application/x-www-form-urlencoded");
+        }
+
+        /// <summary>
+        /// Gets the lat LNG from file.
+        /// </summary>
+        /// <returns>Tuple&lt;System.Double, System.Double&gt;.</returns>
+        public static Tuple<double, double> GetLatLngFromFile()
+        {
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini") &&
+                File.ReadAllText(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini").Contains(":"))
+            {
+                var latlngFromFile = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini");
+                var latlng = latlngFromFile.Split(':');
+                if (latlng[0].Length != 0 && latlng[1].Length != 0)
+                {
+                    try
+                    {
+                        double temp_lat = Convert.ToDouble(latlng[0]);
+                        double temp_long = Convert.ToDouble(latlng[1]);
+
+                        if (temp_lat >= -90 && temp_lat <= 90 && temp_long >= -180 && temp_long <= 180)
+                        {
+                            return new Tuple<double, double>(temp_lat, temp_long);
+                        }
+                        else
+                        {
+                            Logger.Write("Coordinates in \"Coords.ini\" file are invalid, using the default coordinates ",
+                            LogLevel.Warning);
+                            return null;
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        Logger.Write("Coordinates in \"Coords.ini\" file are invalid, using the default coordinates ",
+                            LogLevel.Warning);
+                        return null;
+                    }
+                }
+
+            }
+
+            return null;
         }
 
         public ISettings Settings { get; }
@@ -318,6 +333,7 @@ namespace PokemonGo.RocketAPI
         public void SaveLatLng(double lat, double lng)
         {
             var latlng = lat + ":" + lng;
+            Directory.CreateDirectory(Directory.GetCurrentDirectory() + "\\Configs");
             File.WriteAllText(Directory.GetCurrentDirectory() + "\\Configs\\Coords.ini", latlng);
         }
 
@@ -469,6 +485,25 @@ namespace PokemonGo.RocketAPI
             return
                 await
                     _httpClient.PostProtoPayload<Request, UseItemCaptureRequest>($"https://{_apiUrl}/rpc",
+                        useItemRequest);
+        }
+
+        public async Task<UseItemRequest> UseItemXpBoost(ItemId itemId) //changed from UseItem to UseItemXpBoost because of the RequestType
+        {
+            var customRequest = new UseItemRequest
+            {
+                ItemId = itemId,
+            };
+
+            var useItemRequest = RequestBuilder.GetRequest(_unknownAuth, CurrentLat, CurrentLng, CurrentAltitude,
+                new Request.Types.Requests
+                {
+                    Type = (int)RequestType.USE_ITEM_XP_BOOST,
+                    Message = customRequest.ToByteString()
+                });
+            return
+                await
+                    _httpClient.PostProtoPayload<Request, UseItemRequest>($"https://{_apiUrl}/rpc",
                         useItemRequest);
         }
     }
