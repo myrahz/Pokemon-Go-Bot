@@ -184,6 +184,7 @@ namespace PokemonGo.RocketAPI.Logic
 
             foreach (var pokemon in mypokemons)
             {
+                
                 if (currentList.Where(p => (string)p.Cells[3].Value == pokemon.Id.ToString()).Count() == 0)
                 {
                     if (_imagesList.Images.ContainsKey("pokemon_" + ((int)pokemon.PokemonId).ToString()))
@@ -258,6 +259,7 @@ namespace PokemonGo.RocketAPI.Logic
         {
             double exphr = Math.Round((_currentExperience - _startExperience) / (DateTime.Now - _startDateTime).TotalHours);
             labelExpHr.Invoke(new Action(() => labelExpHr.Text = exphr.ToString() + " XP/HR"));
+            labelRuntime.Invoke(new Action(() => labelRuntime.Text = "Runtime: "+(DateTime.Now - _startDateTime).ToString(@"d\.hh\:mm\:ss")));
         }
 
     }

@@ -262,6 +262,7 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     Logger.Write(e.Message + " from " + e.Source);
                     Logger.Write("Got an exception, trying automatic restart..", LogLevel.Error);
+                    _liveView.Close();
                     await Execute();
                 }
                 await Task.Delay(10000);
