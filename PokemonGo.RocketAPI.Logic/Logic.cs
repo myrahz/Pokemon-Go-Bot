@@ -1,4 +1,4 @@
-#region
+﻿#region
 
 using System;
 using System.Collections.Generic;
@@ -28,7 +28,7 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Statistics _stats;
 
         private static liveView _liveView;
-        private static bool _useLiveview = true;
+        private static bool _useLiveview = false;
 
         public Logic(ISettings clientSettings)
         {
