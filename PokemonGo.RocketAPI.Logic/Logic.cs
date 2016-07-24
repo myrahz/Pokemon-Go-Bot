@@ -640,5 +640,37 @@ namespace PokemonGo.RocketAPI.Logic
             if (_liveView != null)
                 _liveView.UpdateMapPokemons(pokemons);
         }
+
+        private async Task LoadAndDisplayGPXFile()
+        {
+            string xmlString = System.IO.File.ReadAllText(_clientSettings.GPXFile);
+            GPXReader Readgpx = new GPXReader(xmlString);
+            foreach (GPXReader.trk trk in Readgpx.Tracks)
+            {
+                foreach (GPXReader.trkseg trkseg in trk.Segments)
+                {
+                    foreach (GPXReader.trkpt trpkt in trkseg.TrackPoints)
+                    {
+                        Console.WriteLine(trpkt.ToString());
+                    }
+                }
+            }
+            await Task.Delay(0);
+        }
+
+
+        private GPXReader.trk GetGPXTrack(string gpxFile)
+        {
+            string xmlString = System.IO.File.ReadAllText(_clientSettings.GPXFile);
+            GPXReader Readgpx = new GPXReader(xmlString);
+            return Readgpx.Tracks.ElementAt(0);
+        }
+
+        private List<GPXReader.trk> GetGPXTracks(string gpxFile)
+        {
+            string xmlString = System.IO.File.ReadAllText(_clientSettings.GPXFile);
+            GPXReader Readgpx = new GPXReader(xmlString);
+            return Readgpx.Tracks;
+        }
     }
 }

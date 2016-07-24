@@ -188,7 +188,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (currentList.Where(p => (string)p.Cells[3].Value == pokemon.Id.ToString()).Count() == 0)
                 {
                     if (_imagesList.Images.ContainsKey("pokemon_" + ((int)pokemon.PokemonId).ToString()))
-                        dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(_imagesList.Images[_imagesList.Images.IndexOfKey("pokemon_" + ((int)pokemon.PokemonId).ToString())], pokemon.PokemonId.ToString(), pokemon.Cp, pokemon.Id.ToString())));
+                        dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(_imagesList.Images[_imagesList.Images.IndexOfKey("pokemon_" + ((int)pokemon.PokemonId).ToString())], pokemon.PokemonId.ToString(), pokemon.Cp + "(" + PokemonInfo.CalculateMaxCP(pokemon).ToString() +")", pokemon.Id.ToString())));
                     else
                         dataMyPokemons.Invoke(new Action(() => dataMyPokemons.Rows.Add(new Bitmap(40, 30), pokemon.PokemonId.ToString(), pokemon.Cp, pokemon.Id.ToString())));
                 }
