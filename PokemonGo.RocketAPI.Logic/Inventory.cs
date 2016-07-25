@@ -62,7 +62,7 @@ namespace PokemonGo.RocketAPI.Logic
             var myPokemon = await GetPokemons();
 
             var pokemonList =
-                myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0 && p.Cp < _client.Settings.KeepMinCP)
+                myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0 )
                     .ToList();
             if (filter != null)
             {
@@ -157,6 +157,15 @@ namespace PokemonGo.RocketAPI.Logic
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
             return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
+        }
+        
+        public async Task<IEnumerable<PokemonFamily>> GetCandy()
+        {
+
+            var myPokemonFamilies = await GetPokemonFamilies();
+            var pokemonFamilies = myPokemonFamilies.ToList();
+            return pokemonFamilies.OrderByDescending(x => x.Candy);
+
         }
 
         public async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit)

@@ -39,5 +39,7 @@ namespace PokemonGo.RocketAPI
         ICollection<PokemonId> PokemonsNotToTransfer { get; }
 
         ICollection<PokemonId> PokemonsNotToCatch { get; }
+        
+        ICollection<PokemonId> PokemonsToAlwaysTransfer { get; }
     }
 }

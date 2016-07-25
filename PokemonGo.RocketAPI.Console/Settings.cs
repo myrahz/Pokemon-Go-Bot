@@ -16,6 +16,7 @@ namespace PokemonGo.RocketAPI.Console
         private ICollection<PokemonId> _pokemonsNotToTransfer;
         private ICollection<PokemonId> _pokemonsToEvolve;
         private ICollection<PokemonId> _pokemonsNotToCatch;
+        private ICollection<PokemonId> _pokemonsToAlwaysTransfer;
         private ICollection<KeyValuePair<ItemId, int>> _itemRecycleFilter;
 
         public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
@@ -162,6 +163,21 @@ namespace PokemonGo.RocketAPI.Console
                 _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("Configs\\ConfigPokemonsToKeep.ini", defaultPokemon);
                 return _pokemonsNotToTransfer;
             }
+        }
+        
+        public ICollection<PokemonId> PokemonsToAlwaysTransfer
+        {
+            
+            get
+            {
+                //Type of pokemons to transfer no matter what
+                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                    PokemonId.Pinsir
+                };
+                _pokemonsToAlwaysTransfer = _pokemonsToAlwaysTransfer ?? LoadPokemonList("Configs\\ConfigPokemonsToAlwaysTransfer.ini", defaultPokemon);
+                return _pokemonsToAlwaysTransfer;
+            }
+
         }
 
         //Do not catch those

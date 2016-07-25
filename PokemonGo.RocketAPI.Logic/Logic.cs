@@ -660,14 +660,15 @@ namespace PokemonGo.RocketAPI.Logic
         {
             try
             {
+                await showoffCandy();
+                await DisplayHighests();
                 while (true)
                 {
                     _playerProfile = await _client.GetProfile();
                     _stats.SetUsername(_playerProfile);
                     if (_clientSettings.EvolveAllPokemonWithEnoughCandy || _clientSettings.EvolveAllPokemonAboveIV)
                         await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-                    if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
-                    await DisplayHighests();
+                    if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();                    
                     _stats.UpdateConsoleTitle(_inventory);
                     await RecycleItems();
                     await ExecuteFarmingPokestopsAndPokemons(_clientSettings.UseGPXPathing);
@@ -721,8 +722,10 @@ namespace PokemonGo.RocketAPI.Logic
 
             foreach (var duplicatePokemon in duplicatePokemons)
             {
-                if (duplicatePokemon.Cp >= _clientSettings.KeepMinCP ||
-                    PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) > _clientSettings.KeepMinIVPercentage)
+                if ((PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >= _clientSettings.KeepMinIVPercentage &&
+                   !duplicatePokemon.PokemonId.Equals(_clientSettings.PokemonsToAlwaysTransfer.FirstOrDefault(i => i == duplicatePokemon.PokemonId))) ||
+                   (duplicatePokemon.Cp > _clientSettings.KeepMinCP &&
+                   !duplicatePokemon.PokemonId.Equals(_clientSettings.PokemonsToAlwaysTransfer.FirstOrDefault(i => i == duplicatePokemon.PokemonId))))
                     continue;
                 await _client.TransferPokemon(duplicatePokemon.Id);
                 _inventory.DeletePokemonFromInvById(duplicatePokemon.Id);
@@ -833,6 +836,19 @@ namespace PokemonGo.RocketAPI.Logic
                 var transfer = await _client.TransferPokemon(pokemon.Value);
                 Logger.Write($"{pokemon.Key} has been transfered.", LogLevel.Transfer);
                 await Task.Delay(500);
+            }
+        }
+        
+        private async Task showoffCandy()
+        {
+
+            var pokemonFamilies = await _inventory.GetCandy();
+
+            foreach(var test in pokemonFamilies)
+            {
+
+                Logger.Write($"We have {test.Candy} for {test.FamilyId}", LogLevel.Caught);
+
             }
         }
 
